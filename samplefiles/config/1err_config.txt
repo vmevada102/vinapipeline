@@ -1,0 +1,10 @@
+receptor = 1err_clean.pdbqt
+exhaustiveness  = 8
+num_modes  = 9
+center_x = 67.1887941128
+center_y = 35.8805719414
+center_z = 73.721100105
+size_x = 32.7042440139
+size_y = 35.9716677915
+size_z = 37.6104685274
+cpu = 22

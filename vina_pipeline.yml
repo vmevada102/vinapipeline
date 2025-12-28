@@ -1,0 +1,50 @@
+name: vina_pipeline
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+
+dependencies:
+  # Core
+  - python=3.10
+  - pip
+  - numpy
+  - pandas
+  - scipy
+  - scikit-learn
+  - matplotlib
+  - seaborn
+
+  # Docking & structure
+  - autodock-vina
+  - openbabel
+  - biopython
+
+  # Visualization
+  - plotly
+  - kaleido
+
+  # Dimensionality reduction
+  - umap-learn
+
+  # Clustering / stats
+  - scikit-bio
+  - statsmodels
+
+  # Structural analysis
+  - mdanalysis
+  - rdkit
+
+  # Parallel
+  - parallel
+
+  # XML parsing / utilities
+  - lxml
+  - tqdm
+
+  # Optional (used safely in pipeline)
+  - networkx
+
+  # Pip-only installs
+  - pip:
+      - prolif
