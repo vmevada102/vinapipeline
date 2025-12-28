@@ -104,8 +104,56 @@ conda activate vina_pipeline
 PLIP (Protein–Ligand Interaction Profiler) must be available at the system level.
 The pipeline automatically detects PLIP and enables interaction analysis if available.
 
-```bash
+
 Ubuntu / Debian (recommended)
 
+Installation
 
+1\. Create Conda Environment:
+
+conda env create -f vina\_pipeline.yml
+
+conda activate vina\_pipeline
+
+2\. Install PLIP (System-Level):
+
+sudo apt install -y plip
+
+or
+
+pip install plip
+
+3\. GNU Parallel:
+
+sudo apt install -y parallel
+
+parallel --citation
+
+Running the Pipeline:
+
+bash vina\_master\_pipeline\_auto.sh
+
+Sample Data:
+
+Use samplefiles/ directory to test pipeline quickly.
+
+Outputs:
+
+\- Docking results
+
+\- Ranking tables
+
+\- Heatmaps and figures
+
+\- PLIP interaction reports
+
+\- Manuscript-ready text files
+
+Citation:
+
+AutoDock Vina, PLIP, GNU Parallel as referenced in README.
+
+Contact:
+
+Open an issue or pull request for collaboration.
 
