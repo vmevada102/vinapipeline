@@ -96,7 +96,7 @@ project/
         ├── methods_auto.txt
         └── results_analysis_auto.txt
 
-
+---
 
 # **Installation**
 The pipeline is designed to run inside a dedicated Conda environment for maximum stability.\
