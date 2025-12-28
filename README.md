@@ -64,7 +64,6 @@ It integrates **docking, ranking, statistics, interaction profiling, and visuali
 
 ---
 
-## 📂 Repository Structure
 
 ## 📁 Project Structure
 
@@ -95,32 +94,42 @@ project/
         ├── interaction_fingerprints_plip.csv
         ├── methods_auto.txt
         └── results_analysis_auto.txt
-
+```
 ---
 
 # **Installation**
 The pipeline is designed to run inside a dedicated Conda environment for maximum stability.\
 \
 1\. Create the Conda environment:\
-`   `conda env create -f vina\_pipeline.yml\
-`   `conda activate vina\_pipeline\
+```text
+conda env create -f vina_pipeline.yml
+conda activate vina_pipeline
+```
 \
 2\. Install PLIP at the system level:\
-`   `sudo apt install -y plip\
-`   `or\
-`   `pip install plip\
-\
+```text
+sudo apt install -y plip
+or
+pip install plip
+```
 3\. Install GNU Parallel and accept citation notice:\
-`   `sudo apt install -y parallel\
-`   `parallel --citation
+```text
+sudo apt install -y parallel
+```
+
+
 # **Running the Pipeline**
 The entire workflow is executed using a single master script:\
-\
-bash vina\_master\_pipeline\_auto.sh\
-\
+
+```text
+bash vina_master_pipeline_auto.sh
+```
+
 During execution, the script interactively prompts for input directories and the number of top-ranked ligands to carry forward for advanced analyses such as heatmaps, interaction profiling, and complex generation.
+
 # **Example Test Data**
 A minimal, ready-to-run test dataset is provided in the samplefiles/ directory. This allows users to verify correct installation and functionality without preparing custom data. The test dataset completes within minutes on standard hardware.
+
 # **Analyses Performed**
 Docking Analysis:\
 \- Best binding pose extraction\
@@ -139,6 +148,8 @@ Interaction Analysis:\
 \
 Multivariate Analysis:\
 \- PCA, UMAP, and t-SNE visualizations
+
+
 # **Outputs**
 The pipeline produces a comprehensive set of outputs, including:\
 \
@@ -147,6 +158,7 @@ The pipeline produces a comprehensive set of outputs, including:\
 \- Interaction frequency and fingerprint matrices\
 \- LigPlot-style 2D interaction diagrams (optional)\
 \- Auto-generated Methods and Results text files
+
 # **Reproducibility and Best Practices**
 The pipeline adheres to modern best practices in computational structural biology:\
 \- Fully scripted, no manual intervention\
@@ -154,18 +166,21 @@ The pipeline adheres to modern best practices in computational structural biolog
 \- Resume-safe execution\
 \- Headless server and HPC compatibility\
 \- Transparent statistical methodology
+
 # **Citation**
 If you use this pipeline, please cite:\
 \
 Trott O, Olson AJ. AutoDock Vina. Journal of Computational Chemistry, 2010.\
 Schake et al. PLIP 2025. Nucleic Acids Research.\
 Tange O. GNU Parallel 2025. Zenodo.
+
 # **Intended Use**
 This pipeline is intended for academic and industrial research applications, including:\
 \- Virtual screening campaigns\
 \- Drug repurposing studies\
 \- Binding mode comparison\
 \- Manuscript and report generation
+
 # **Contact and Contributions**
 Contributions, bug reports, and feature requests are welcome. Please use GitHub Issues or Pull Requests for communication.
 
