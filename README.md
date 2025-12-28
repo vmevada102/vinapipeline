@@ -98,211 +98,77 @@ project/
 
 
 
-#Installation
-##1️⃣ Create the Conda Environment
+# **Installation**
+The pipeline is designed to run inside a dedicated Conda environment for maximum stability.\
+\
+1\. Create the Conda environment:\
+`   `conda env create -f vina\_pipeline.yml\
+`   `conda activate vina\_pipeline\
+\
+2\. Install PLIP at the system level:\
+`   `sudo apt install -y plip\
+`   `or\
+`   `pip install plip\
+\
+3\. Install GNU Parallel and accept citation notice:\
+`   `sudo apt install -y parallel\
+`   `parallel --citation
+# **Running the Pipeline**
+The entire workflow is executed using a single master script:\
+\
+bash vina\_master\_pipeline\_auto.sh\
+\
+During execution, the script interactively prompts for input directories and the number of top-ranked ligands to carry forward for advanced analyses such as heatmaps, interaction profiling, and complex generation.
+# **Example Test Data**
+A minimal, ready-to-run test dataset is provided in the samplefiles/ directory. This allows users to verify correct installation and functionality without preparing custom data. The test dataset completes within minutes on standard hardware.
+# **Analyses Performed**
+Docking Analysis:\
+\- Best binding pose extraction\
+\- Per-receptor and consensus energy ranking\
+\
+Statistical Analysis:\
+\- Z-score normalization\
+\- Stability index computation\
+\- Borda rank aggregation\
+\- PERMANOVA and cluster validation\
+\
+Interaction Analysis:\
+\- PLIP residue-level interaction profiling\
+\- ProLIF interaction fingerprints\
+\- Consensus interaction scoring\
+\
+Multivariate Analysis:\
+\- PCA, UMAP, and t-SNE visualizations
+# **Outputs**
+The pipeline produces a comprehensive set of outputs, including:\
+\
+\- CSV files of docking scores and rankings\
+\- Heatmaps and clustering figures (300 DPI)\
+\- Interaction frequency and fingerprint matrices\
+\- LigPlot-style 2D interaction diagrams (optional)\
+\- Auto-generated Methods and Results text files
+# **Reproducibility and Best Practices**
+The pipeline adheres to modern best practices in computational structural biology:\
+\- Fully scripted, no manual intervention\
+\- Conda-pinned environment\
+\- Resume-safe execution\
+\- Headless server and HPC compatibility\
+\- Transparent statistical methodology
+# **Citation**
+If you use this pipeline, please cite:\
+\
+Trott O, Olson AJ. AutoDock Vina. Journal of Computational Chemistry, 2010.\
+Schake et al. PLIP 2025. Nucleic Acids Research.\
+Tange O. GNU Parallel 2025. Zenodo.
+# **Intended Use**
+This pipeline is intended for academic and industrial research applications, including:\
+\- Virtual screening campaigns\
+\- Drug repurposing studies\
+\- Binding mode comparison\
+\- Manuscript and report generation
+# **Contact and Contributions**
+Contributions, bug reports, and feature requests are welcome. Please use GitHub Issues or Pull Requests for communication.
 
-Create and activate the dedicated environment:
-```text
-conda env create -f vina_pipeline.yml
-conda activate vina_pipeline
-
-
-This installs all required Python packages for:
-
-Docking analysis
-
-Statistical analysis
-
-Visualization
-
-PLIP XML parsing
-
-ProLIF interaction fingerprints
-
-Multivariate analysis (PCA / UMAP / t-SNE)
-
-2️⃣ Install PLIP (System-Level Requirement)
-
-PLIP (Protein–Ligand Interaction Profiler) must be available at the system level.
-
-Ubuntu / Debian (recommended)
-sudo apt update
-sudo apt install -y plip
-
-Alternative (pip)
-pip install plip
-
-
-Verify installation:
-
-plip -h
-
-
-⚠️ If PLIP is not detected, the pipeline automatically skips PLIP analysis safely without crashing.
-
-3️⃣ Install GNU Parallel
-
-GNU Parallel is required for high-performance docking.
-
-sudo apt install -y parallel
-
-
-Silence the citation notice (recommended):
-
-parallel --citation
-
-▶️ Running the Pipeline
-
-Run the pipeline using:
-
-bash vina_pipeline.sh
-
-🧩 Interactive Prompts
-
-During execution, you will be prompted for:
-
-Ligand directory
-
-Receptor directory
-
-Config directory
-
-Top-N ligands to proceed for:
-
-Heatmap generation
-
-Complex extraction
-
-PLIP / ProLIF interaction analysis
-
-Default values are provided for convenience.
-
-🧪 Example Test Data (Quick Start)
-
-A minimal test dataset is provided under samplefiles/ to verify correct installation.
-
-Sample Data Structure
-samplefiles/
-├── ligands/
-│   ├── sample_ligand_1.pdbqt
-│   ├── sample_ligand_2.pdbqt
-│   └── sample_ligand_3.pdbqt
-├── receptors/
-│   └── sample_receptor.pdbqt
-└── config/
-    └── sample_receptor_config.txt
-
-Run Using Sample Data
-bash vina_pipeline.sh
-
-
-Enter the following when prompted:
-
-Ligand directory [default: ligands/]: samplefiles/ligands
-Receptor directory [default: receptors/]: samplefiles/receptors
-Config directory   [default: config/]: samplefiles/config
-Top-N compounds for downstream analysis [default: 50]: 3
-
-
-✅ The test run completes in minutes.
-
-📊 Outputs
-🔬 Docking Results
-
-Best binding energy per ligand–receptor pair
-
-Resume-safe docking logs
-
-🧮 Ranking & Scoring
-
-Mean binding energy
-
-Z-score normalization
-
-Stability index
-
-Borda rank aggregation
-
-Composite ligand score
-
-All tables are saved under:
-
-results/summary/
-
-📈 Visualization Outputs
-
-Binding-energy heatmaps (Top-N safe mode)
-
-Rank-matrix heatmaps
-
-Residue-interaction heatmaps
-
-Interaction-type heatmaps
-
-PCA / UMAP / t-SNE plots
-
-Cluster validity plots
-
-Figures are saved at 300 DPI in:
-
-results/summary/figures/
-
-🔗 Interaction Analysis
-
-PLIP XML interaction reports
-
-Residue-wise interaction frequencies
-
-Consensus interaction scores
-
-Ligand interaction fingerprints
-
-Optional LigPlot-style 2D interaction diagrams
-
-PLIP outputs are stored in:
-
-results/interactions/plip/<receptor>/<ligand>/
-
-📝 Manuscript-Ready Outputs
-
-The pipeline automatically generates:
-
-methods_auto.txt – ready-to-paste Methods section
-
-results_analysis_auto.txt – structured Results narrative
-
-Per-figure captions saved alongside figures
-
-These files are suitable for direct manuscript integration.
-
-🧾 Citation
-
-If you use this pipeline, please cite:
-
-AutoDock Vina
-
-Trott O, Olson AJ.
-AutoDock Vina: improving the speed and accuracy of docking.
-Journal of Computational Chemistry, 2010.
-
-PLIP
-
-Schäke et al.
-PLIP 2025: protein–ligand interaction profiler.
-Nucleic Acids Research, 2025.
-
-GNU Parallel
-
-Tange O.
-GNU Parallel 2025.
-Zenodo.
-https://doi.org/10.5281/zenodo.17692695
-
-🔒 Reproducibility & Best Practices
-
-Conda-pinned environment
-
-Resume-safe execution
 
 Deterministic statistics
 
