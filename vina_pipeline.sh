@@ -118,6 +118,25 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+def extract_best_pose(vina_pdbqt, out_pdbqt):
+    """
+    Extract MODEL 1 (best pose) from a Vina multi-model PDBQT
+    """
+    with open(vina_pdbqt) as inp, open(out_pdbqt, "w") as out:
+        write = False
+        for line in inp:
+            if line.startswith("MODEL 1"):
+                write = True
+                continue
+            if line.startswith("MODEL"):
+                break
+            if write:
+                if not line.startswith("ENDMDL"):
+                    out.write(line)
+
+
+
+
 TOP_N = int(os.getenv("TOP_N_ANALYSIS", "20"))
 
 rows = []
@@ -200,10 +219,13 @@ for receptor in df["receptor"].unique():
 
     dock_dir = Path("results/docking") / receptor
 
-    for lig in ranked_ligands:
-        src = dock_dir / f"{lig}_out.pdbqt"
-        if src.exists():
-            shutil.copy(src, rec_dir / f"{lig}_best.pdbqt")
+for lig in top_ligands:
+    src = dock_dir / f"{lig}_out.pdbqt"
+    dst = rec_dir / f"{lig}_best.pdbqt"
+
+    if src.exists():
+        extract_best_pose(src, dst)
+
 
 #===================================================="
 #Convert best pose to PDB & build complexes"
