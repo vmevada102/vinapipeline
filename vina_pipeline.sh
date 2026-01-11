@@ -187,6 +187,92 @@ final_ranking = borda.sort_values("consensus_score", ascending=False)
 final_ranking.to_csv("results/summary/ligand_consensus_ranking.csv")
 
 
+# ---- Weighted Consensus (important receptors get higher weight) ----
+
+# ---- Define receptor weights ----
+# You can edit these values
+receptor_weights = {
+    rec: 1.0 for rec in rank_matrix.columns
+}
+
+# Example: make main target more important
+# receptor_weights["7tob"] = 2.0
+# receptor_weights["3pp0"] = 1.5
+
+# ---- Compute weighted Borda ----
+weighted_borda = pd.DataFrame(index=rank_matrix.index)
+
+for rec in rank_matrix.columns:
+    max_rank = rank_matrix[rec].max()
+    weighted_borda[rec] = receptor_weights.get(rec, 1.0) * (max_rank - rank_matrix[rec] + 1)
+
+weighted_borda["weighted_consensus"] = weighted_borda.sum(axis=1)
+
+weighted_borda.sort_values("weighted_consensus", ascending=False)\
+              .to_csv("results/summary/ligand_weighted_consensus.csv")
+
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Limit to top ligands for readability
+topN = min(50, len(rank_matrix))
+top_ligands = final_ranking.head(topN).index
+rank_heat = rank_matrix.loc[top_ligands]
+
+plt.figure(figsize=(rank_heat.shape[1]*1.2, rank_heat.shape[0]*0.35))
+sns.heatmap(rank_heat, cmap="viridis_r", annot=False, linewidths=0.2)
+plt.title(f"Top-{topN} Ligand Rank Heatmap (Lower = Better)")
+plt.xlabel("Receptor")
+plt.ylabel("Ligand")
+plt.tight_layout()
+plt.savefig("results/summary/figures/rank_heatmap_top50.png", dpi=300)
+plt.close()
+
+
+import numpy as np
+
+def bootstrap_consensus(df, receptors, n_boot=1000):
+    ligands = df["ligand"].unique()
+    scores = {lig: [] for lig in ligands}
+
+    for i in range(n_boot):
+        sampled = np.random.choice(receptors, size=len(receptors), replace=True)
+        temp = df[df["receptor"].isin(sampled)]
+
+        ranks = temp.groupby("receptor")["energy"].rank(method="min")
+        temp = temp.assign(rank=ranks)
+
+        rm = temp.pivot(index="ligand", columns="receptor", values="rank")
+        borda = rm.apply(lambda x: rm.max()[x.name] - x + 1)
+
+        total = borda.sum(axis=1)
+        for lig in total.index:
+            scores[lig].append(total[lig])
+
+    return scores
+
+# Run bootstrap
+bootstrap_scores = bootstrap_consensus(df, df["receptor"].unique(), n_boot=500)
+
+# Compute confidence intervals
+ci = []
+for lig, vals in bootstrap_scores.items():
+    ci.append([
+        lig,
+        np.mean(vals),
+        np.percentile(vals, 2.5),
+        np.percentile(vals, 97.5)
+    ])
+
+ci_df = pd.DataFrame(ci, columns=["ligand","mean_score","CI_low","CI_high"])
+ci_df.sort_values("mean_score", ascending=False)\
+     .to_csv("results/summary/ligand_consensus_bootstrap_CI.csv", index=False)
+
+
+
+
+
 # ---- TOP-N SELECTION (CRITICAL SAFETY) ----
 top_ligands = (
     df.groupby("ligand")["energy"]
