@@ -164,6 +164,29 @@ df.to_csv("results/summary/vina_best_scores.csv", index=False)
 energy_matrix = df.pivot(index="ligand", columns="receptor", values="energy")
 energy_matrix.to_csv("results/summary/ligand_receptor_binding_energy_matrix.csv")
 
+# df columns: ligand, receptor, energy
+
+# Rank ligands per receptor (lower energy = better)
+df["rank"] = df.groupby("receptor")["energy"].rank(method="min", ascending=True)
+
+# Build rank matrix
+rank_matrix = df.pivot(index="ligand", columns="receptor", values="rank")
+rank_matrix.to_csv("results/summary/ligand_receptor_rank_matrix.csv")
+
+# Compute Borda consensus score
+borda = pd.DataFrame(index=rank_matrix.index)
+
+for rec in rank_matrix.columns:
+    max_rank = rank_matrix[rec].max()
+    borda[rec] = max_rank - rank_matrix[rec] + 1
+
+borda["consensus_score"] = borda.sum(axis=1)
+
+# Final ranked ligands
+final_ranking = borda.sort_values("consensus_score", ascending=False)
+final_ranking.to_csv("results/summary/ligand_consensus_ranking.csv")
+
+
 # ---- TOP-N SELECTION (CRITICAL SAFETY) ----
 top_ligands = (
     df.groupby("ligand")["energy"]
