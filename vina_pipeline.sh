@@ -88,7 +88,7 @@ dock_ligand () {
          --config "$cfg" \
          --cpu 1 \
          --out "$outdir/${lname}_out.pdbqt" \
-         --log "$logfile"
+         > "$logfile" 2>&1
 }
 
 export -f dock_ligand
