@@ -100,6 +100,13 @@ project/
 # **Installation**
 The pipeline is designed to run inside a dedicated Conda environment for maximum stability.\
 \
+0\. Download Repository:\
+```text
+git clone https://github.com/vmevada102/vinapipeline.git
+```
+
+
+
 1\. Create the Conda environment:\
 ```text
 conda env create -f vina_pipeline.yml
