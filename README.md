@@ -105,12 +105,17 @@ The pipeline is designed to run inside a dedicated Conda environment for maximum
 git clone https://github.com/vmevada102/vinapipeline.git
 ```
 
-
-
 1\. Create the Conda environment:\
 ```text
-conda env create -f vina_pipeline.yml
+conda create --name vina_pipeline python=3.10
 conda activate vina_pipeline
+
+conda env update --name vina_pipeline --file environment_v1.yml --prune
+
+conda env update --name vina_pipeline --file vina_pipeline.yml --prune
+conda install -c conda-forge python-kaleido
+conda install -c conda-forge numpy swig boost-cpp libboost sphinx sphinx_rtd_theme
+
 ```
 \
 2\. Install PLIP at the system level:\
@@ -123,7 +128,11 @@ pip install plip
 ```text
 sudo apt install -y parallel
 ```
-
+4\. Install Vina\
+```text
+pip install vina
+sudo apt install autodock-vina
+```
 
 # **Running the Pipeline**
 The entire workflow is executed using a single master script:\
