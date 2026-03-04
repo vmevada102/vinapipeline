@@ -99,7 +99,21 @@ export CONFIG_DIR DOCK_DIR
 # ----------------------------------------------------
 # RUN DOCKING
 # ----------------------------------------------------
+#for receptor in "$RECEPTOR_DIR"/*.pdbqt; do
+#    if [ "$USE_PARALLEL" -eq 1 ]; then
+#        parallel -j "$PARALLEL_JOBS" dock_ligand "$receptor" ::: "$LIGAND_DIR"/*.pdbqt
+#    else
+#        for ligand in "$LIGAND_DIR"/*.pdbqt; do
+#            dock_ligand "$receptor" "$ligand"
+#       done
+#   fi
+#done
+
+# ----------------------------------------------------
+# RUN DOCKING - OUTER LOOP FOR ALL RECEPTORS
+# ----------------------------------------------------
 for receptor in "$RECEPTOR_DIR"/*.pdbqt; do
+    echo "Processing Receptor: $(basename "$receptor")"
     if [ "$USE_PARALLEL" -eq 1 ]; then
         parallel -j "$PARALLEL_JOBS" dock_ligand "$receptor" ::: "$LIGAND_DIR"/*.pdbqt
     else
