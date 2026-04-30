@@ -197,7 +197,7 @@ This pipeline is intended for academic and industrial research applications, inc
 \- Binding mode comparison\
 \- Manuscript and report generation
 
-# **Contact and Contributions**
+# **Analysis using analysis_pipeline.py**
 Contributions, bug reports, and feature requests are welcome. Please use GitHub Issues or Pull Requests for communication.
 
 
