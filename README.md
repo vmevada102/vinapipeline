@@ -247,13 +247,21 @@ final_score_interpretation.txt
 
 📂 Input Requirements
 The script expects the following directory structure:
-results/├── summary/│   └── vina_best_scores.csv└── interactions/    └── plip_interactions_all.csv (optional)
+```text
+results/
+├── summary/│
+    └── vina_best_scores.csv
+└── interactions/    
+    ── plip_interactions_all.csv (optional)
+```
 Input Files
 FileDescriptionvina_best_scores.csvDocking results (ligand, receptor, energy)plip_interactions_all.csvInteraction data (optional but recommended)
 
 # **▶️ Usage**
 Run the script after docking and interaction analysis:
+```text
 python analysis_pipeline.py
+```
 
 # **📈 Scientific Significance**
 This pipeline improves traditional docking workflows by:
@@ -262,30 +270,10 @@ Reducing false positives from docking alone
 Providing mechanistic insight into ligand binding
 Enabling robust lead prioritization
 
-# **🎯 Use Cases**
-Virtual screening campaigns
-Drug discovery projects
-MSc / PhD thesis work
-
-
-Research publications
 
 
 
-🧠 Notes
-If PLIP data is not available, the script will still run using docking and stability scores.
-Designed to be modular and easily extendable (e.g., ADMET, ML models).
-🚀 Future Extensions
-ADMET filtering integration
-Machine learning-based scoring
-Interactive visualization dashboard
-Multi-target selectivity analysis
-If you want, I can also:
-Write a full README.md for your repo
-
-Add badges, installation guide, and screenshots
 
 
-Or prepare it for GitHub publication (structured project layout)
 
 
