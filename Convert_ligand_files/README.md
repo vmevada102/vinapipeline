@@ -142,11 +142,6 @@ input/
 python ligand_prepare_advanced.py
 
 
-## 2. Run the Pipeline
-
-```bash
-python ligand_prepare_advanced.py
-
 
 Supported Input Formats
 Format	Supported
