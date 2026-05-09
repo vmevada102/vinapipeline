@@ -1,0 +1,10 @@
+receptor = 7tob_wr.pdbqt
+exhaustiveness  = 8
+num_modes  = 9
+center_x = -18.973897
+center_y = 0.678414
+center_z = 12.8
+size_x = 18.22322
+size_y = 18.22322
+size_z = 18.22322
+cpu = 22
