@@ -3,39 +3,31 @@
 """
 =========================================================
 AUTODOCK VINA LIGAND PREPARATION PIPELINE
-MULTI-SDF + MULTI-SMILES SUPPORT
 =========================================================
-
-SUPPORTED INPUT
----------------
-? Multi-molecule SDF
-? MOL
-? MOL2
-? PDB
-? SMI
-? SMILES
-? TXT
-? CSV
 
 FEATURES
 --------
-? Automatically extracts all molecules
-? Uses compound names automatically
-? Generates ONLY .pdbqt files
-? MMFF94 optimization
-? UFF fallback
-? Multiple conformers
-? Lowest-energy conformer selection
-? Parallel processing
-? Error logging
-? Failed compound tracking
-? Molecular descriptor CSV
+✓ Multi-molecule SDF support
+✓ Multi-SMILES support
+✓ MOL / MOL2 / PDB support
+✓ Automatic ligand extraction
+✓ Automatic naming
+✓ MMFF94 optimization
+✓ UFF fallback
+✓ Multiple conformer generation
+✓ Lowest-energy conformer selection
+✓ Parallel processing
+✓ Automatic dependency installation
+✓ Error logging
+✓ Failed ligand tracking
+✓ Molecular descriptor generation
+✓ Meeko-based PDBQT conversion
 
 OUTPUT
 ------
 ligands/
-    compound1.pdbqt
-    compound2.pdbqt
+    ligand1.pdbqt
+    ligand2.pdbqt
 
 error_log.txt
 error_convert.txt
@@ -54,14 +46,14 @@ import importlib.util
 from multiprocessing import Pool, cpu_count
 
 # =========================================================
-# AUTO INSTALL
+# AUTO INSTALL DEPENDENCIES
 # =========================================================
 
 REQUIRED_PACKAGES = {
     "rdkit": "rdkit",
-    "meeko": "meeko",
+    "pandas": "pandas",
     "gemmi": "gemmi",
-    "pandas": "pandas"
+    "meeko": "meeko"
 }
 
 
@@ -76,10 +68,11 @@ def install_package(package_name):
 
     try:
 
+        # Better installed through conda
         if package_name in [
             "rdkit",
-            "gemmi",
-            "pandas"
+            "pandas",
+            "gemmi"
         ]:
 
             subprocess.check_call([
@@ -110,6 +103,7 @@ def install_package(package_name):
         sys.exit(1)
 
 
+# Install all missing packages
 for pkg_import, pkg_install in REQUIRED_PACKAGES.items():
 
     if not is_installed(pkg_import):
@@ -131,22 +125,23 @@ from meeko import MoleculePreparation
 from meeko import PDBQTWriterLegacy
 
 # =========================================================
-# FOLDERS
+# PATHS
 # =========================================================
 
 INPUT_DIR = "input"
 
 OUTPUT_DIR = "ligands"
 
-os.makedirs(INPUT_DIR, exist_ok=True)
-
-os.makedirs(OUTPUT_DIR, exist_ok=True)
-
 ERROR_LOG = "error_log.txt"
 
 FAILED_CONVERT_FILE = "error_convert.txt"
 
 PROPERTY_CSV = "ligand_properties.csv"
+
+# Create folders
+os.makedirs(INPUT_DIR, exist_ok=True)
+
+os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # =========================================================
 # LOGGING
@@ -213,7 +208,7 @@ def get_molecule_name(
     return f"{fallback_name}_{index}"
 
 # =========================================================
-# READ INPUT FILE
+# READ INPUT FILES
 # =========================================================
 
 def read_input_file(filepath):
@@ -321,7 +316,7 @@ def read_input_file(filepath):
                 )
 
         # =================================================
-        # SMILES/TXT/CSV
+        # SMILES / TXT / CSV
         # =================================================
 
         elif ext in [
@@ -347,9 +342,6 @@ def read_input_file(filepath):
 
                     continue
 
-                smiles = None
-                name = None
-
                 # CSV
                 if "," in line:
 
@@ -371,6 +363,7 @@ def read_input_file(filepath):
 
                 smiles = parts[0].strip()
 
+                # Name
                 if len(parts) > 1:
 
                     name = parts[1].strip()
@@ -392,7 +385,7 @@ def read_input_file(filepath):
                         log_failed_compound(name)
 
                         log_error(
-                            f"Invalid SMILES\n"
+                            f"\nInvalid SMILES\n"
                             f"{smiles}\n"
                             f"Line: {idx+1}"
                         )
@@ -434,7 +427,7 @@ def read_input_file(filepath):
     return molecules
 
 # =========================================================
-# GENERATE BEST CONFORMER
+# GENERATE CONFORMERS
 # =========================================================
 
 def generate_best_conformer(
@@ -504,7 +497,7 @@ def generate_best_conformer(
     return mol
 
 # =========================================================
-# CONVERT TO PDBQT
+# PDBQT CONVERSION
 # =========================================================
 
 def convert_to_pdbqt(
@@ -512,33 +505,57 @@ def convert_to_pdbqt(
     output_file
 ):
 
-    preparator = MoleculePreparation()
+    try:
 
-    setup_list = preparator.prepare(mol)
+        # Safe rebuild
+        mol = Chem.Mol(mol)
 
-    pdbqt_result = (
-        PDBQTWriterLegacy.write_string(
-            setup_list[0]
+        # Sanitize
+        Chem.SanitizeMol(mol)
+
+        # Add hydrogens
+        mol = Chem.AddHs(
+            mol,
+            addCoords=True
         )
-    )
 
-    if isinstance(
-        pdbqt_result,
-        tuple
-    ):
+        # Prepare ligand
+        preparator = MoleculePreparation()
 
-        pdbqt_string = pdbqt_result[0]
+        setup_list = preparator.prepare(
+            mol
+        )
 
-    else:
+        pdbqt_result = (
+            PDBQTWriterLegacy.write_string(
+                setup_list[0]
+            )
+        )
 
-        pdbqt_string = pdbqt_result
+        # New Meeko compatibility
+        if isinstance(
+            pdbqt_result,
+            tuple
+        ):
 
-    with open(output_file, "w") as f:
+            pdbqt_string = pdbqt_result[0]
 
-        f.write(pdbqt_string)
+        else:
+
+            pdbqt_string = pdbqt_result
+
+        with open(output_file, "w") as f:
+
+            f.write(pdbqt_string)
+
+    except Exception as e:
+
+        raise Exception(
+            f"PDBQT conversion failed: {str(e)}"
+        )
 
 # =========================================================
-# CALCULATE PROPERTIES
+# DESCRIPTORS
 # =========================================================
 
 def calculate_properties(
@@ -582,6 +599,10 @@ def process_molecule(args):
 
     try:
 
+        # Sanitize
+        Chem.SanitizeMol(mol)
+
+        # Generate conformers
         mol = generate_best_conformer(
             mol
         )
@@ -591,6 +612,7 @@ def process_molecule(args):
             ligand_name + ".pdbqt"
         )
 
+        # Convert
         convert_to_pdbqt(
             mol,
             output_file
@@ -601,6 +623,7 @@ def process_molecule(args):
             f"{output_file}"
         )
 
+        # Properties
         properties = (
             calculate_properties(
                 mol,
@@ -635,12 +658,85 @@ def process_molecule(args):
 # =========================================================
 # MAIN
 # =========================================================
+def show_instructions():
+
+    print("\n====================================================")
+    print(" AUTODOCK VINA LIGAND PREPARATION PIPELINE ")
+    print("====================================================")
+
+    print("\nSUPPORTED INPUT FORMATS:")
+    print("--------------------------------------------")
+
+    print("✓ SDF")
+    print("✓ Multi-SDF")
+    print("✓ MOL")
+    print("✓ MOL2")
+    print("✓ PDB")
+    print("✓ SMI")
+    print("✓ SMILES")
+    print("✓ TXT")
+    print("✓ CSV")
+
+    print("\nINPUT DIRECTORY:")
+    print("--------------------------------------------")
+    print("Place all ligand files inside:")
+    print("input/")
+
+    print("\nEXAMPLE FILES:")
+    print("--------------------------------------------")
+
+    print("\nMulti-SDF:")
+    print("input/phytochemicals.sdf")
+
+    print("\nSMILES format:")
+    print("CCO Ethanol")
+    print("CC(=O)O AceticAcid")
+
+    print("\nOUTPUT FILES:")
+    print("--------------------------------------------")
+    print("ligands/*.pdbqt")
+    print("error_log.txt")
+    print("error_convert.txt")
+    print("ligand_properties.csv")
+
+    print("\nWORKFLOW:")
+    print("--------------------------------------------")
+    print("Input Files")
+    print("   ↓")
+    print("Molecule Parsing")
+    print("   ↓")
+    print("3D Coordinate Generation")
+    print("   ↓")
+    print("MMFF94 Optimization")
+    print("   ↓")
+    print("PDBQT Conversion")
+    print("   ↓")
+    print("AutoDock Vina Compatible Ligands")
+
+    print("\n====================================================")
+
+    confirm = input(
+        "\nType 'yes' to start processing: "
+    )
+
+    if confirm.lower() != "yes":
+
+        print("\nProcess cancelled.")
+
+        sys.exit(0)
+
+    print("\nStarting ligand preparation...\n")
+
 
 def main():
 
+    show_instructions()
+
     print("\n====================================")
-    print(" MULTI-LIGAND PREPARATION ")
+    print(" AUTOCK VINA LIGAND PREPARATION ")
     print("====================================")
+
+    
 
     all_molecules = []
 
@@ -688,7 +784,7 @@ def main():
 
         return
 
-    # CPU cores
+    # CPU
     n_cpu = max(
         1,
         cpu_count() - 1
@@ -706,14 +802,14 @@ def main():
             all_molecules
         )
 
-    # Keep successful results
+    # Successful ligands
     valid_results = [
 
         r for r in results
         if r is not None
     ]
 
-    # Save CSV
+    # Save descriptors
     if len(valid_results) > 0:
 
         df = pd.DataFrame(
