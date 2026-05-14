@@ -118,6 +118,7 @@ conda activate vina_pipeline
 # Install Dependencies
 
 ```bash
+conda install -c conda-forge rdkit -y
 conda install -c conda-forge rdkit gemmi pandas -y
 
 pip install meeko
