@@ -667,16 +667,7 @@ def show_instructions():
     print("\nSUPPORTED INPUT FORMATS:")
     print("--------------------------------------------")
 
-    print("✓ SDF")
-    print("✓ Multi-SDF")
-    print("✓ MOL")
-    print("✓ MOL2")
-    print("✓ PDB")
-    print("✓ SMI")
-    print("✓ SMILES")
-    print("✓ TXT")
-    print("✓ CSV")
-
+    print("✓ SDF,Multi-SDF,MOL,MOL2,PDB,SMI,SMILES,TXT,CSV")
     print("\nINPUT DIRECTORY:")
     print("--------------------------------------------")
     print("Place all ligand files inside:")
@@ -687,10 +678,9 @@ def show_instructions():
 
     print("\nMulti-SDF:")
     print("input/phytochemicals.sdf")
-
     print("\nSMILES format:")
-    print("CCO Ethanol")
-    print("CC(=O)O AceticAcid")
+    print("CCO,Ethanol")
+    print("CC(=O)O,AceticAcid")
 
     print("\nOUTPUT FILES:")
     print("--------------------------------------------")
@@ -700,21 +690,7 @@ def show_instructions():
     print("ligand_properties.csv")
 
     print("\nWORKFLOW:")
-    print("--------------------------------------------")
-    print("Input Files")
-    print("   ↓")
-    print("Molecule Parsing")
-    print("   ↓")
-    print("3D Coordinate Generation")
-    print("   ↓")
-    print("MMFF94 Optimization")
-    print("   ↓")
-    print("PDBQT Conversion")
-    print("   ↓")
-    print("AutoDock Vina Compatible Ligands")
-
-    print("\n====================================================")
-
+    print("Input Files--> Molecule Parsing-->3D Coordinate Generation-->MMFF94 Optimization-->PDBQT Conversion-->AutoDock Vina Compatible Ligands")
     confirm = input(
         "\nType 'yes' to start processing: "
     )
